@@ -10,15 +10,19 @@ import {
   getPublicCareersResult,
   type PublicCareer,
 } from "@/lib/careers";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, webPageSchema } from "@/lib/schema";
+import JsonLd from "../components/JsonLd";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Careers",
   description:
     "Join Vivexa Tech in Gurugram. Full-time roles and internships in design and web development.",
-  alternates: { canonical: "/careers" },
-};
+  path: "/careers",
+});
 
 function RoleCard({ career }: { career: PublicCareer }) {
   const skills = career.requirements.slice(0, 4);
@@ -86,6 +90,20 @@ export default async function CareersPage() {
 
   return (
     <PageShell>
+      <JsonLd
+        data={webPageSchema({
+          name: "Vivexa Tech careers",
+          description:
+            "Join Vivexa Tech in Gurugram. Full-time roles and internships in design and web development.",
+          path: "/careers",
+        })}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Careers", path: "/careers" },
+        ])}
+      />
       <main id="main">
         <PageHero
           eyebrow="Careers"
@@ -140,6 +158,22 @@ export default async function CareersPage() {
           </div>
         </section>
 
+        <section className="bg-background px-4 pb-4 md:px-8 lg:px-10">
+          <div className="mx-auto flex max-w-site flex-wrap gap-5">
+            <Link
+              href="/about"
+              className="font-semibold text-ink underline-offset-4 hover:underline"
+            >
+              About the studio →
+            </Link>
+            <Link
+              href="/team"
+              className="font-semibold text-ink underline-offset-4 hover:underline"
+            >
+              Meet the team →
+            </Link>
+          </div>
+        </section>
         <CtaBanner
           title="Don't see the right seat?"
           description="Send a short note anyway. We hire for taste and follow-through more than a perfect title."

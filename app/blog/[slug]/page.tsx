@@ -12,7 +12,9 @@ import {
   resolveBlogCanonical,
 } from "@/lib/blogs";
 import { sanitizeBlogHtml } from "@/lib/sanitize-html";
-import { ORGANIZATION, SITE_URL } from "@/lib/site";
+import { SITE_URL } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, organizationRef } from "@/lib/schema";
 
 export const dynamic = "force-dynamic";
 
@@ -28,32 +30,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = post.seoTitle || post.title;
   const description = post.seoDescription || post.excerpt;
   const canonical = resolveBlogCanonical(post);
-  const canonicalAbs = canonical.startsWith("http")
-    ? canonical
-    : `${SITE_URL}${canonical}`;
-  const image = post.featuredImage || undefined;
 
-  return {
+  return pageMetadata({
     title,
     description,
-    alternates: { canonical },
-    openGraph: {
-      title: `${title} · Vivexa Tech`,
-      description,
-      url: canonicalAbs,
-      type: "article",
-      publishedTime: post.publishedAt || undefined,
-      modifiedTime: post.updatedAt || undefined,
-      authors: [post.author],
-      images: image ? [{ url: image, alt: post.featuredImageAlt || title }] : undefined,
-    },
-    twitter: {
-      card: image ? "summary_large_image" : "summary",
-      title: `${title} · Vivexa Tech`,
-      description,
-      images: image ? [image] : undefined,
-    },
-  };
+    path: canonical,
+    image: post.featuredImage || undefined,
+    imageAlt: post.featuredImageAlt || title,
+    type: "article",
+    publishedTime: post.publishedAt || undefined,
+    modifiedTime: post.updatedAt || undefined,
+    authors: [post.author],
+  });
 }
 
 export default async function BlogPostPage({ params }: Props) {
@@ -73,19 +61,11 @@ export default async function BlogPostPage({ params }: Props) {
     "@type": "BlogPosting",
     headline: post.seoTitle || post.title,
     description: post.seoDescription || post.excerpt,
-    author: {
-      "@type": post.author === "Vivexa Tech" ? "Organization" : "Person",
-      name: post.author,
-    },
-    publisher: {
-      "@type": "Organization",
-      name: ORGANIZATION.name,
-      url: ORGANIZATION.url,
-      logo: {
-        "@type": "ImageObject",
-        url: ORGANIZATION.logo,
-      },
-    },
+    author:
+      post.author === "Vivexa Tech"
+        ? organizationRef()
+        : { "@type": "Person", name: post.author },
+    publisher: organizationRef(),
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": canonicalAbs,
@@ -107,30 +87,11 @@ export default async function BlogPostPage({ params }: Props) {
     <PageShell>
       <JsonLd data={schema} />
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            {
-              "@type": "ListItem",
-              position: 1,
-              name: "Home",
-              item: SITE_URL,
-            },
-            {
-              "@type": "ListItem",
-              position: 2,
-              name: "Blog",
-              item: `${SITE_URL}/blog`,
-            },
-            {
-              "@type": "ListItem",
-              position: 3,
-              name: post.title,
-              item: canonicalAbs,
-            },
-          ],
-        }}
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Blog", path: "/blog" },
+          { name: post.title, path: `/blog/${post.slug}` },
+        ])}
       />
       <main id="main">
         <PageHero
@@ -160,9 +121,15 @@ export default async function BlogPostPage({ params }: Props) {
               className="blog-article mt-8"
               dangerouslySetInnerHTML={{ __html: safeHtml }}
             />
-            <p className="pt-10">
-              <Link href="/blog" className="font-semibold text-ink hover:underline">
+            <p className="flex flex-wrap gap-x-5 gap-y-2 pt-10 text-sm font-semibold text-ink">
+              <Link href="/blog" className="hover:underline">
                 ← All articles
+              </Link>
+              <Link href="/services" className="hover:underline">
+                Services
+              </Link>
+              <Link href="/contact" className="hover:underline">
+                Start a project
               </Link>
             </p>
           </div>

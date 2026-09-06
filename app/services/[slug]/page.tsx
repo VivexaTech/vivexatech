@@ -7,8 +7,9 @@ import { ButtonLink } from "../../components/Button";
 import JsonLd from "../../components/JsonLd";
 import { fallbackServices, getPublicService } from "@/lib/services";
 import { SITE_URL } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, organizationRef } from "@/lib/schema";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
 type Props = {
@@ -22,17 +23,14 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const service = await getPublicService(slug);
-  if (!service) return { title: "Service" };
-  return {
+  if (!service) return { title: "Service", robots: { index: false } };
+  return pageMetadata({
     title: service.name,
     description: service.shortDescription,
-    alternates: { canonical: `/services/${service.slug}` },
-    openGraph: {
-      title: `${service.name} · Vivexa Tech`,
-      description: service.shortDescription,
-      url: `${SITE_URL}/services/${service.slug}`,
-    },
-  };
+    path: `/services/${service.slug}`,
+    image: service.image || undefined,
+    imageAlt: service.name,
+  });
 }
 
 export default async function ServiceDetailPage({ params }: Props) {
@@ -54,40 +52,17 @@ export default async function ServiceDetailPage({ params }: Props) {
           name: service.name,
           serviceType: service.name,
           description: service.shortDescription,
-          provider: {
-            "@type": "Organization",
-            name: "Vivexa Tech",
-            url: SITE_URL,
-          },
+          provider: organizationRef(),
           areaServed: "Gurugram, India",
           url: `${SITE_URL}/services/${service.slug}`,
         }}
       />
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            {
-              "@type": "ListItem",
-              position: 1,
-              name: "Home",
-              item: SITE_URL,
-            },
-            {
-              "@type": "ListItem",
-              position: 2,
-              name: "Services",
-              item: `${SITE_URL}/services`,
-            },
-            {
-              "@type": "ListItem",
-              position: 3,
-              name: service.name,
-              item: `${SITE_URL}/services/${service.slug}`,
-            },
-          ],
-        }}
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+          { name: service.name, path: `/services/${service.slug}` },
+        ])}
       />
       <main id="main">
         <PageHero
@@ -100,15 +75,18 @@ export default async function ServiceDetailPage({ params }: Props) {
           <div className="mx-auto grid max-w-site gap-10 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="surface-card rounded-3xl p-6 md:p-10">
               <h2 className="font-heading text-2xl font-semibold text-ink">
-                {service.name}
+                What this work covers
               </h2>
               <div className="mt-6 space-y-5 text-base leading-relaxed text-muted md:text-lg">
                 {paragraphs.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
               </div>
-              <div className="mt-10">
+              <div className="mt-10 flex flex-wrap gap-3">
                 <ButtonLink href="/contact">Start a project</ButtonLink>
+                <ButtonLink href="/work" variant="outline">
+                  Selected work
+                </ButtonLink>
               </div>
             </div>
             <aside className="rounded-3xl bg-navy-deep p-6 text-white md:p-10">

@@ -18,13 +18,17 @@ import JsonLd from "./components/JsonLd";
 import { faqs, testimonials } from "./data/home";
 import { getWorkProjects } from "@/lib/projects";
 import { getPublicServices } from "@/lib/services";
+import { pageMetadata } from "@/lib/seo";
+import { webPageSchema } from "@/lib/schema";
+import { SITE_NAME } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Affordable websites for startups",
+export const metadata: Metadata = pageMetadata({
+  title: `${SITE_NAME} — Affordable websites for startups in Gurugram`,
   description:
-    "Gurugram-based web designers helping new businesses launch professional, attractive, and budget-friendly websites.",
-  alternates: { canonical: "/" },
-};
+    "Gurugram web studio helping new businesses and startups launch professional, attractive, and budget-friendly websites.",
+  path: "/",
+  absoluteTitle: true,
+});
 
 export default async function Home() {
   const [workProjects, services] = await Promise.all([
@@ -41,18 +45,12 @@ export default async function Home() {
   return (
     <>
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: faqs.map((item) => ({
-            "@type": "Question",
-            name: item.question,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: item.answer,
-            },
-          })),
-        }}
+        data={webPageSchema({
+          name: "Vivexa Tech",
+          description:
+            "Gurugram web studio helping new businesses and startups launch professional, attractive, and budget-friendly websites.",
+          path: "/",
+        })}
       />
       <Header />
       <Hero />
@@ -213,7 +211,7 @@ export default async function Home() {
               ))}
 
               <div className="flex justify-center pt-2 md:pt-4">
-                <ButtonLink href="/projects">
+                <ButtonLink href="/work">
                   View all projects
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

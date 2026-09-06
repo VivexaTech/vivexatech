@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import PageShell from "../components/PageShell";
 import PageHero from "../components/PageHero";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Privacy Policy",
-  description: "How Vivexa Tech handles personal information.",
-  alternates: { canonical: "/privacy-policy" },
-};
+  description:
+    "How Vivexa Tech in Gurugram collects and uses information from contact, newsletter, and career forms.",
+  path: "/privacy-policy",
+});
 
 export default function PrivacyPage() {
   return (
@@ -45,7 +47,7 @@ export default function PrivacyPage() {
               described here before they run.
             </p>
             <p>
-              This policy applies to vivexatech.in and related pages operated by
+              This policy applies to www.vivexatech.in and related pages operated by
               Vivexa Tech in Gurugram. If we make a material change, we will
               update the date at the top of this page.
             </p>

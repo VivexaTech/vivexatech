@@ -1,14 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Sora } from "next/font/google";
 import "./globals.css";
 import JsonLd from "./components/JsonLd";
 import {
-  CONTACT,
-  ORGANIZATION,
-  SITE_DESCRIPTION,
-  SITE_NAME,
-  SITE_URL,
-} from "@/lib/site";
+  localBusinessSchema,
+  organizationSchema,
+  websiteSchema,
+} from "@/lib/schema";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,6 +27,12 @@ const sora = Sora({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#07101c",
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -46,31 +51,28 @@ export const metadata: Metadata = {
   authors: [{ name: SITE_NAME, url: SITE_URL }],
   creator: SITE_NAME,
   publisher: SITE_NAME,
-  alternates: {
-    canonical: "/",
-  },
+  category: "technology",
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: SITE_URL,
     siteName: SITE_NAME,
     title: `${SITE_NAME} — Affordable websites for startups in Gurugram`,
     description: SITE_DESCRIPTION,
-    images: [{ url: "/logo.svg", alt: `${SITE_NAME} logo` }],
   },
   twitter: {
     card: "summary_large_image",
     title: `${SITE_NAME} — Affordable websites for startups`,
     description: SITE_DESCRIPTION,
-    images: ["/logo.svg"],
   },
   robots: {
     index: true,
     follow: true,
   },
   icons: {
-    icon: "/logo.svg",
+    icon: [{ url: "/icon", type: "image/png" }],
+    apple: [{ url: "/apple-icon", type: "image/png" }],
   },
+  manifest: "/manifest.webmanifest",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -84,42 +86,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <a href="#main" className="skip-link">
           Skip to content
         </a>
-        <JsonLd
-          data={{
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            name: ORGANIZATION.name,
-            legalName: ORGANIZATION.legalName,
-            url: ORGANIZATION.url,
-            logo: ORGANIZATION.logo,
-            description: SITE_DESCRIPTION,
-            areaServed: ORGANIZATION.areaServed,
-            telephone: ORGANIZATION.telephone,
-            email: ORGANIZATION.email,
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: `${CONTACT.addressLines[0]}, ${CONTACT.addressLines[1]}`,
-              addressLocality: "Gurugram",
-              postalCode: "122006",
-              addressRegion: "Haryana",
-              addressCountry: "IN",
-            },
-            sameAs: ORGANIZATION.sameAs,
-          }}
-        />
-        <JsonLd
-          data={{
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            name: SITE_NAME,
-            url: SITE_URL,
-            description: SITE_DESCRIPTION,
-            publisher: {
-              "@type": "Organization",
-              name: SITE_NAME,
-            },
-          }}
-        />
+        <JsonLd data={organizationSchema()} />
+        <JsonLd data={websiteSchema()} />
+        <JsonLd data={localBusinessSchema()} />
         {children}
       </body>
     </html>

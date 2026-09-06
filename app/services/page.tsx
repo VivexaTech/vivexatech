@@ -7,22 +7,17 @@ import CtaBanner from "../components/CtaBanner";
 import JsonLd from "../components/JsonLd";
 import { getPublicServices, groupServices } from "@/lib/services";
 import { SITE_URL } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, webPageSchema } from "@/lib/schema";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Services",
   description:
-    "Website design, branding, UX/UI, SEO, security, landing pages, and Webflow development from Vivexa Tech.",
-  alternates: { canonical: "/services" },
-  openGraph: {
-    title: "Services · Vivexa Tech",
-    description:
-      "Website design, branding, UX/UI, SEO, security, landing pages, and Webflow development from Vivexa Tech.",
-    url: `${SITE_URL}/services`,
-  },
-};
+    "Website design, development, branding, UX/UI, SEO, security, and landing pages from Vivexa Tech in Gurugram.",
+  path: "/services",
+});
 
 export default async function ServicesPage() {
   const services = await getPublicServices();
@@ -30,6 +25,21 @@ export default async function ServicesPage() {
 
   return (
     <PageShell>
+      <JsonLd
+        data={webPageSchema({
+          name: "Vivexa Tech services",
+          description:
+            "Website design, development, branding, UX/UI, SEO, security, and landing pages from Vivexa Tech in Gurugram.",
+          path: "/services",
+          type: "CollectionPage",
+        })}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+        ])}
+      />
       <JsonLd
         data={{
           "@context": "https://schema.org",

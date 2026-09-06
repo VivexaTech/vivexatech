@@ -7,14 +7,15 @@ import CtaBanner from "../components/CtaBanner";
 import { ButtonLink } from "../components/Button";
 import SectionHeading from "../components/SectionHeading";
 import JsonLd from "../components/JsonLd";
-import { SITE_URL } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, webPageSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About",
   description:
-    "Vivexa Tech is a Gurugram-based web studio helping new businesses launch professional, budget-friendly websites.",
-  alternates: { canonical: "/about" },
-};
+    "Vivexa Tech is a Gurugram web studio helping new businesses and startups launch professional, budget-friendly websites.",
+  path: "/about",
+});
 
 const values = [
   {
@@ -39,14 +40,19 @@ export default function AboutPage() {
   return (
     <PageShell>
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "AboutPage",
+        data={webPageSchema({
           name: "About Vivexa Tech",
-          url: `${SITE_URL}/about`,
           description:
-            "Gurugram-based web studio helping new businesses launch professional, budget-friendly websites.",
-        }}
+            "Gurugram web studio helping new businesses and startups launch professional, budget-friendly websites.",
+          path: "/about",
+          type: "AboutPage",
+        })}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "About", path: "/about" },
+        ])}
       />
       <main id="main">
         <PageHero
@@ -115,14 +121,22 @@ export default function AboutPage() {
           <div className="mx-auto flex max-w-site flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <p className="max-w-xl text-lg text-muted">
               Want the people behind the work? See who is currently active at
-              Vivexa Tech.
+              Vivexa Tech, or browse open roles.
             </p>
-            <Link
-              href="/team"
-              className="font-semibold text-ink underline-offset-4 hover:underline"
-            >
-              Our team →
-            </Link>
+            <div className="flex flex-wrap gap-5">
+              <Link
+                href="/team"
+                className="font-semibold text-ink underline-offset-4 hover:underline"
+              >
+                Our team →
+              </Link>
+              <Link
+                href="/careers"
+                className="font-semibold text-ink underline-offset-4 hover:underline"
+              >
+                Careers →
+              </Link>
+            </div>
           </div>
         </section>
 

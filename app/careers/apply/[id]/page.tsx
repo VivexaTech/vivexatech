@@ -20,11 +20,15 @@ export async function generateMetadata({
   const { id } = await params;
   const opportunity = await getPublicCareer(id);
   if (!opportunity) {
-    return { title: "Apply" };
+    return {
+      title: "Apply",
+      robots: { index: false, follow: false },
+    };
   }
   return {
     title: `Apply · ${opportunity.title}`,
     description: `Apply for the ${opportunity.title} ${opportunity.type.toLowerCase()} at Vivexa Tech.`,
+    alternates: { canonical: `/careers/apply/${id}` },
     robots: { index: false, follow: false },
   };
 }

@@ -7,29 +7,28 @@ import Reveal from "../components/Reveal";
 import CtaBanner from "../components/CtaBanner";
 import { formatBlogDate, getPublicBlogs } from "@/lib/blogs";
 import { SITE_URL } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, webPageSchema } from "@/lib/schema";
+import JsonLd from "../components/JsonLd";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Blog",
-  description:
-    "Notes from Vivexa Tech on launching websites, SEO, and web security for startups.",
-  alternates: { canonical: "/blog" },
-  openGraph: {
-    title: "Blog · Vivexa Tech",
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}): Promise<Metadata> {
+  const params = await searchParams;
+  const page = Number(typeof params.page === "string" ? params.page : 1);
+  const isPaged = Number.isFinite(page) && page > 1;
+  return pageMetadata({
+    title: isPaged ? `Blog · Page ${page}` : "Blog",
     description:
       "Notes from Vivexa Tech on launching websites, SEO, and web security for startups.",
-    url: `${SITE_URL}/blog`,
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Blog · Vivexa Tech",
-    description:
-      "Notes from Vivexa Tech on launching websites, SEO, and web security for startups.",
-  },
-};
+    path: "/blog",
+    index: !isPaged,
+  });
+}
 
 const PAGE_SIZE = 9;
 
@@ -52,6 +51,34 @@ export default async function BlogPage({
 
   return (
     <PageShell>
+      <JsonLd
+        data={webPageSchema({
+          name: "Vivexa Tech blog",
+          description:
+            "Notes from Vivexa Tech on launching websites, SEO, and web security for startups.",
+          path: "/blog",
+          type: "CollectionPage",
+        })}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Blog", path: "/blog" },
+        ])}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "Published Vivexa Tech articles",
+          itemListElement: visible.map((post, index) => ({
+            "@type": "ListItem",
+            position: (current - 1) * PAGE_SIZE + index + 1,
+            url: `${SITE_URL}/blog/${post.slug}`,
+            name: post.title,
+          })),
+        }}
+      />
       <main id="main">
         <PageHero
           eyebrow="Journal"
@@ -87,6 +114,7 @@ export default async function BlogPage({
                                 src={post.featuredImage}
                                 alt={post.featuredImageAlt || post.title}
                                 fill
+                                priority={index === 0 && current === 1}
                                 sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 100vw"
                                 className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                               />

@@ -11,15 +11,18 @@ import {
   MemberCard,
 } from "../components/team/TeamCards";
 import { getPublicTeam } from "../../lib/employees";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, ORGANIZATION_ID, webPageSchema } from "@/lib/schema";
+import JsonLd from "../components/JsonLd";
+import Link from "next/link";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Our Team",
   description:
-    "Meet the Vivexa Tech studio — leadership, executives, and interns building websites for startups.",
-  alternates: { canonical: "/team" },
-};
+    "Meet the Vivexa Tech studio in Gurugram — leadership, delivery, and internships behind the websites we ship.",
+  path: "/team",
+});
 
-export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
 export default async function TeamPage() {
@@ -34,6 +37,44 @@ export default async function TeamPage() {
 
   return (
     <PageShell>
+      <JsonLd
+        data={webPageSchema({
+          name: "Vivexa Tech team",
+          description:
+            "Meet the Vivexa Tech studio in Gurugram — leadership, delivery, and internships behind the websites we ship.",
+          path: "/team",
+        })}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Team", path: "/team" },
+        ])}
+      />
+      {hasPeople ? (
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "Vivexa Tech team",
+            itemListElement: [founder, ...heads, ...executives, ...others, ...interns]
+              .filter(Boolean)
+              .map((person, index) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                item: {
+                  "@type": "Person",
+                  name: person!.name,
+                  jobTitle: person!.designation,
+                  worksFor: { "@id": ORGANIZATION_ID },
+                  ...(person!.linkedin
+                    ? { sameAs: [person!.linkedin] }
+                    : {}),
+                },
+              })),
+          }}
+        />
+      ) : null}
       <main id="main">
         <PageHero
           eyebrow="Our team"
@@ -166,6 +207,16 @@ export default async function TeamPage() {
           </>
         )}
 
+        <section className="bg-white px-4 pb-8 md:px-8 lg:px-10">
+          <div className="mx-auto max-w-site">
+            <Link
+              href="/careers"
+              className="font-semibold text-ink underline-offset-4 hover:underline"
+            >
+              Open roles and internships →
+            </Link>
+          </div>
+        </section>
         <CtaBanner title="Want to work with this team?" />
       </main>
     </PageShell>

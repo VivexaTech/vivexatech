@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import PageShell from "./components/PageShell";
 import PageHero from "./components/PageHero";
 import { ButtonLink } from "./components/Button";
+
+export const metadata: Metadata = {
+  title: "Page not found",
+  description: "This page is not available on the Vivexa Tech website.",
+  robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
   return (

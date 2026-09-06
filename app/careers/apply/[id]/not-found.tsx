@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import PageShell from "../../../components/PageShell";
 import PageHero from "../../../components/PageHero";
 import { ButtonLink } from "../../../components/Button";
+
+export const metadata: Metadata = {
+  title: "Opening unavailable",
+  description: "This career opening is not accepting applications.",
+  robots: { index: false, follow: false },
+};
 
 export default function ApplyNotFound() {
   return (

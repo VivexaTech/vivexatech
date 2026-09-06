@@ -8,8 +8,9 @@ import { ButtonLink } from "../../../components/Button";
 import JsonLd from "../../../components/JsonLd";
 import { fallbackProjects, getWorkProject } from "@/lib/projects";
 import { SITE_URL } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, organizationRef } from "@/lib/schema";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
 type Props = {
@@ -23,17 +24,14 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const project = await getWorkProject(slug);
-  if (!project) return { title: "Project" };
-  return {
+  if (!project) return { title: "Project", robots: { index: false } };
+  return pageMetadata({
     title: project.title,
     description: project.description,
-    alternates: { canonical: `/projects/web-design/${project.slug}` },
-    openGraph: {
-      title: `${project.title} · Vivexa Tech`,
-      description: project.description,
-      url: `${SITE_URL}/projects/web-design/${project.slug}`,
-    },
-  };
+    path: `/projects/web-design/${project.slug}`,
+    image: project.image || undefined,
+    imageAlt: project.alt,
+  });
 }
 
 export default async function ProjectPage({ params }: Props) {
@@ -50,11 +48,16 @@ export default async function ProjectPage({ params }: Props) {
           name: project.title,
           description: project.description,
           url: `${SITE_URL}/projects/web-design/${project.slug}`,
-          creator: {
-            "@type": "Organization",
-            name: "Vivexa Tech",
-          },
+          image: project.image || undefined,
+          creator: organizationRef(),
         }}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Work", path: "/work" },
+          { name: project.title, path: `/projects/web-design/${project.slug}` },
+        ])}
       />
       <main id="main">
         <PageHero
@@ -95,9 +98,12 @@ export default async function ProjectPage({ params }: Props) {
               ))}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex flex-wrap justify-center gap-3">
               <ButtonLink href="/work" variant="outline">
                 All projects
+              </ButtonLink>
+              <ButtonLink href="/services" variant="outline">
+                Services
               </ButtonLink>
             </div>
           </div>

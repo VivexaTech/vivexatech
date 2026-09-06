@@ -6,17 +6,33 @@ import CtaBanner from "../components/CtaBanner";
 import Reveal from "../components/Reveal";
 import { faqs } from "../data/home";
 import JsonLd from "../components/JsonLd";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, webPageSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "FAQ",
   description:
-    "Answers about Vivexa Tech services, SEO, security, and launch timelines.",
-  alternates: { canonical: "/faq" },
-};
+    "Answers about Vivexa Tech services, launch timelines, SEO, and website security for startups.",
+  path: "/faq",
+});
 
 export default function FaqPage() {
   return (
     <PageShell>
+      <JsonLd
+        data={webPageSchema({
+          name: "Vivexa Tech FAQ",
+          description:
+            "Answers about Vivexa Tech services, launch timelines, SEO, and website security for startups.",
+          path: "/faq",
+        })}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "FAQ", path: "/faq" },
+        ])}
+      />
       <JsonLd
         data={{
           "@context": "https://schema.org",

@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import PageShell from "../components/PageShell";
 import PageHero from "../components/PageHero";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Terms of Service",
-  description: "Terms of use for the Vivexa Tech website.",
-  alternates: { canonical: "/terms" },
-};
+  description:
+    "Terms of use for the Vivexa Tech website and how project work is agreed separately.",
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (

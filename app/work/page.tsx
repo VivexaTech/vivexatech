@@ -8,20 +8,27 @@ import CtaBanner from "../components/CtaBanner";
 import { ButtonLink } from "../components/Button";
 import { getWorkProjects, type ProjectKind } from "@/lib/projects";
 import { SITE_URL } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, webPageSchema } from "@/lib/schema";
+import JsonLd from "../components/JsonLd";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
-export const metadata: Metadata = {
-  title: "Work",
-  description: "Selected website design and UX/UI work from Vivexa Tech.",
-  alternates: { canonical: "/work" },
-  openGraph: {
-    title: "Work · Vivexa Tech",
-    description: "Selected website design and UX/UI work from Vivexa Tech.",
-    url: `${SITE_URL}/work`,
-  },
-};
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}): Promise<Metadata> {
+  const params = await searchParams;
+  const type = typeof params.type === "string" ? params.type : undefined;
+  return pageMetadata({
+    title: "Work",
+    description:
+      "Selected website design and UX/UI work from Vivexa Tech for startups and new businesses.",
+    path: "/work",
+    index: !type,
+  });
+}
 
 const filters: { id: string; label: string; kind?: ProjectKind }[] = [
   { id: "all", label: "All work" },
@@ -48,6 +55,34 @@ export default async function WorkPage({
 
   return (
     <PageShell>
+      <JsonLd
+        data={webPageSchema({
+          name: "Vivexa Tech work",
+          description:
+            "Selected website design and UX/UI work from Vivexa Tech for startups and new businesses.",
+          path: "/work",
+          type: "CollectionPage",
+        })}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Work", path: "/work" },
+        ])}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "Selected Vivexa Tech work",
+          itemListElement: visible.map((project, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            url: `${SITE_URL}${project.href}`,
+            name: project.title,
+          })),
+        }}
+      />
       <main id="main">
         <PageHero
           eyebrow="Selected work"

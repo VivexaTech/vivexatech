@@ -6,17 +6,35 @@ import Reveal from "../components/Reveal";
 import ContactForm from "../components/ContactForm";
 import ContactDetails from "../components/ContactDetails";
 import SectionHeading from "../components/SectionHeading";
+import JsonLd from "../components/JsonLd";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, webPageSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact",
   description:
-    "Book a strategy call with Vivexa Tech. Tell us about your website, brand, or launch. We reply within 24 hours.",
-  alternates: { canonical: "/contact" },
-};
+    "Book a strategy call with Vivexa Tech in Gurugram. Tell us about your website, brand, or launch.",
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (
     <PageShell>
+      <JsonLd
+        data={webPageSchema({
+          name: "Contact Vivexa Tech",
+          description:
+            "Book a strategy call with Vivexa Tech in Gurugram. Tell us about your website, brand, or launch.",
+          path: "/contact",
+          type: "ContactPage",
+        })}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Contact", path: "/contact" },
+        ])}
+      />
       <main id="main">
         <PageHero
           eyebrow="Contact"
