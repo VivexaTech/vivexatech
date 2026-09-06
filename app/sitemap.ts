@@ -2,12 +2,13 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 import { getPublicProjects } from "@/lib/projects";
 import { getPublicServices } from "@/lib/services";
-import { blogPosts } from "@/app/data/blog";
+import { getPublicBlogs } from "@/lib/blogs";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [projects, services] = await Promise.all([
+  const [projects, services, blogs] = await Promise.all([
     getPublicProjects(),
     getPublicServices(),
+    getPublicBlogs(),
   ]);
 
   const staticRoutes = [
@@ -44,9 +45,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: 0.6,
     })),
-    ...blogPosts.map((post) => ({
+    ...blogs.map((post) => ({
       url: `${SITE_URL}/blog/${post.slug}`,
-      lastModified: new Date(),
+      lastModified: post.updatedAt || post.publishedAt || new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.5,
     })),
