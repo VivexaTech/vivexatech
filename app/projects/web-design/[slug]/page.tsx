@@ -4,9 +4,9 @@ import { notFound } from "next/navigation";
 import PageShell from "../../../components/PageShell";
 import PageHero from "../../../components/PageHero";
 import CtaBanner from "../../../components/CtaBanner";
-import { ButtonLink } from "../../../components/Button";
+import { ButtonAnchor, ButtonLink } from "../../../components/Button";
 import JsonLd from "../../../components/JsonLd";
-import { fallbackProjects, getWorkProject } from "@/lib/projects";
+import { fallbackProjects, getWorkProject, projectVisitUrl } from "@/lib/projects";
 import { SITE_URL } from "@/lib/site";
 import { pageMetadata } from "@/lib/seo";
 import { breadcrumbSchema, organizationRef } from "@/lib/schema";
@@ -38,6 +38,8 @@ export default async function ProjectPage({ params }: Props) {
   const { slug } = await params;
   const project = await getWorkProject(slug);
   if (!project) notFound();
+
+  const visitUrl = projectVisitUrl(project.websiteUrl);
 
   return (
     <PageShell>
@@ -99,6 +101,15 @@ export default async function ProjectPage({ params }: Props) {
             </div>
 
             <div className="flex flex-wrap justify-center gap-3">
+              {visitUrl ? (
+                <ButtonAnchor
+                  href={visitUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Visit project
+                </ButtonAnchor>
+              ) : null}
               <ButtonLink href="/work" variant="outline">
                 All projects
               </ButtonLink>

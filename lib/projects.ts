@@ -152,7 +152,7 @@ function mapProject(id: string, data: Record<string, unknown>): PublicProject | 
     growth: String(data.growth ?? "").trim(),
     focus: String(data.focus ?? "").trim(),
     target: String(data.target ?? "").trim(),
-    websiteUrl: String(data.websiteUrl ?? "").trim(),
+    websiteUrl: String(data.websiteUrl ?? data.appUrl ?? "").trim(),
     tags,
     image: String(data.image ?? "").trim(),
     category: String(data.category ?? "Website").trim(),
@@ -170,7 +170,7 @@ async function fetchPublishedProjects(): Promise<PublicProject[]> {
 
 const loadProjects = unstable_cache(
   async () => fetchPublishedProjects(),
-  ["public-projects-v2"],
+  ["public-projects-v3"],
   { revalidate: 300 },
 );
 
@@ -231,6 +231,18 @@ export function toWorkProject(project: PublicProject): WorkProject {
     alt: `${project.name} project preview`,
     websiteUrl: project.websiteUrl,
   };
+}
+
+export function projectVisitUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  try {
+    const url = new URL(trimmed);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
 }
 
 export async function getWorkProjects(): Promise<WorkProject[]> {

@@ -5,7 +5,7 @@ import Header from "./components/Header";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
 import Reveal from "./components/Reveal";
-import { ButtonLink } from "./components/Button";
+import { ButtonAnchor, ButtonLink } from "./components/Button";
 import FaqAccordion from "./components/FaqAccordion";
 import TestimonialsSlider from "./components/TestimonialsSlider";
 import SectionEyebrow from "./components/SectionEyebrow";
@@ -16,7 +16,7 @@ import Showreel from "./components/Showreel";
 import SectionHeading from "./components/SectionHeading";
 import JsonLd from "./components/JsonLd";
 import { faqs, testimonials } from "./data/home";
-import { getWorkProjects } from "@/lib/projects";
+import { getWorkProjects, projectVisitUrl } from "@/lib/projects";
 import { getPublicServices } from "@/lib/services";
 import { pageMetadata } from "@/lib/seo";
 import { webPageSchema } from "@/lib/schema";
@@ -122,7 +122,9 @@ export default async function Home() {
             />
 
             <div className="surface-card space-y-12 overflow-hidden rounded-3xl p-5 sm:p-8 md:space-y-16 md:rounded-[2rem] md:p-12 lg:p-16">
-              {workProjects.slice(0, 3).map((project, index) => (
+              {workProjects.slice(0, 3).map((project, index) => {
+                const visitUrl = projectVisitUrl(project.websiteUrl);
+                return (
                 <Reveal key={project.slug} delay={index * 0.05}>
                   <article className="grid grid-cols-1 items-center gap-6 lg:grid-cols-2 lg:gap-12">
                     <div
@@ -185,30 +187,42 @@ export default async function Home() {
                         ))}
                       </div>
 
-                      <Link
-                        href={project.href}
-                        className="group relative inline-flex min-h-11 w-fit items-center justify-center gap-3 rounded-sm text-base font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink md:text-lg"
-                      >
-                        <span>Explore</span>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 13 8"
-                          fill="none"
-                          className="motion-safe:group-hover:translate-x-1 transition-transform duration-300"
-                          aria-hidden="true"
+                      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                        <Link
+                          href={project.href}
+                          className="group relative inline-flex min-h-11 w-fit items-center justify-center gap-3 rounded-sm text-base font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink md:text-lg"
                         >
-                          <path
-                            d="M0.5 3.18188C0.223858 3.18188 2.98023e-08 3.40574 2.98023e-08 3.68188C2.98023e-08 3.95803 0.223858 4.18188 0.5 4.18188L0.5 3.68188L0.5 3.18188ZM12.8536 4.03544C13.0488 3.84018 13.0488 3.52359 12.8536 3.32833L9.67157 0.146351C9.47631 -0.0489111 9.15973 -0.0489111 8.96447 0.146351C8.7692 0.341613 8.7692 0.658196 8.96447 0.853458L11.7929 3.68188L8.96447 6.51031C8.7692 6.70557 8.7692 7.02216 8.96447 7.21742C9.15973 7.41268 9.47631 7.41268 9.67157 7.21742L12.8536 4.03544ZM0.5 3.68188L0.5 4.18188L12.5 4.18188V3.68188V3.18188L0.5 3.18188L0.5 3.68188Z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </Link>
+                          <span>Explore</span>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 13 8"
+                            fill="none"
+                            className="motion-safe:group-hover:translate-x-1 transition-transform duration-300"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M0.5 3.18188C0.223858 3.18188 2.98023e-08 3.40574 2.98023e-08 3.68188C2.98023e-08 3.95803 0.223858 4.18188 0.5 4.18188L0.5 3.68188L0.5 3.18188ZM12.8536 4.03544C13.0488 3.84018 13.0488 3.52359 12.8536 3.32833L9.67157 0.146351C9.47631 -0.0489111 9.15973 -0.0489111 8.96447 0.146351C8.7692 0.341613 8.7692 0.658196 8.96447 0.853458L11.7929 3.68188L8.96447 6.51031C8.7692 6.70557 8.7692 7.02216 8.96447 7.21742C9.15973 7.41268 9.47631 7.41268 9.67157 7.21742L12.8536 4.03544ZM0.5 3.68188L0.5 4.18188L12.5 4.18188V3.68188V3.18188L0.5 3.18188L0.5 3.68188Z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                        </Link>
+                        {visitUrl ? (
+                          <ButtonAnchor
+                            href={visitUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Visit project
+                          </ButtonAnchor>
+                        ) : null}
+                      </div>
                     </div>
                   </article>
                 </Reveal>
-              ))}
+                );
+              })}
 
               <div className="flex justify-center pt-2 md:pt-4">
                 <ButtonLink href="/work">

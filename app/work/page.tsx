@@ -5,8 +5,8 @@ import PageShell from "../components/PageShell";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
 import CtaBanner from "../components/CtaBanner";
-import { ButtonLink } from "../components/Button";
-import { getWorkProjects, type ProjectKind } from "@/lib/projects";
+import { ButtonAnchor, ButtonLink } from "../components/Button";
+import { getWorkProjects, projectVisitUrl, type ProjectKind } from "@/lib/projects";
 import { SITE_URL } from "@/lib/site";
 import { pageMetadata } from "@/lib/seo";
 import { breadcrumbSchema, webPageSchema } from "@/lib/schema";
@@ -118,37 +118,51 @@ export default async function WorkPage({
               </p>
             ) : (
               <div className="grid gap-6 md:grid-cols-2">
-                {visible.map((project, index) => (
+                {visible.map((project, index) => {
+                  const visitUrl = projectVisitUrl(project.websiteUrl);
+                  return (
                   <Reveal key={project.slug} delay={index * 0.05}>
-                    <Link
-                      href={project.href}
-                      className="group surface-card block overflow-hidden rounded-3xl"
-                    >
-                      <div className="relative aspect-video overflow-hidden bg-navy">
-                        {project.image ? (
-                          <Image
-                            src={project.image}
-                            alt={project.alt}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 50vw"
-                            className="object-cover motion-safe:group-hover:scale-105 transition-transform duration-700"
-                          />
+                    <article className="surface-card flex h-full flex-col overflow-hidden rounded-3xl">
+                      <Link href={project.href} className="group block">
+                        <div className="relative aspect-video overflow-hidden bg-navy">
+                          {project.image ? (
+                            <Image
+                              src={project.image}
+                              alt={project.alt}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 50vw"
+                              className="object-cover motion-safe:group-hover:scale-105 transition-transform duration-700"
+                            />
+                          ) : null}
+                        </div>
+                      </Link>
+                      <div className="flex flex-1 flex-col p-6 md:p-8">
+                        <Link href={project.href} className="group block">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-strong">
+                            {project.category}
+                          </p>
+                          <h2 className="mt-3 font-heading text-2xl font-semibold text-ink">
+                            {project.title}
+                          </h2>
+                          <p className="mt-3 line-clamp-3 text-muted leading-relaxed">
+                            {project.description}
+                          </p>
+                        </Link>
+                        {visitUrl ? (
+                          <ButtonAnchor
+                            href={visitUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-6 w-fit"
+                          >
+                            Visit project
+                          </ButtonAnchor>
                         ) : null}
                       </div>
-                      <div className="p-6 md:p-8">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-strong">
-                          {project.category}
-                        </p>
-                        <h2 className="mt-3 font-heading text-2xl font-semibold text-ink">
-                          {project.title}
-                        </h2>
-                        <p className="mt-3 line-clamp-3 text-muted leading-relaxed">
-                          {project.description}
-                        </p>
-                      </div>
-                    </Link>
+                    </article>
                   </Reveal>
-                ))}
+                  );
+                })}
               </div>
             )}
 
